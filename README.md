@@ -7,10 +7,6 @@ This Chrome extension monitors queue cookies (e.g., `queue-it-token`, `queue-pos
 - Provides a manual check button.
 
 
-The official chrome extension is submitted for review and publishing.
-![alt text](image.png)
-
-
 # Installation
 1. **Clone the repository:**  
    ```bash
