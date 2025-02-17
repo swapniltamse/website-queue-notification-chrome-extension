@@ -10,7 +10,7 @@ This Chrome extension monitors queue cookies (e.g., `queue-it-token`, `queue-pos
 # Installation
 1. **Clone the repository:**  
    ```bash
-   git clone https://github.com/yourusername/queue-watcher.git
+   git clone https://github.com/yourusername/nyrr-queue-watcher.git
    ```
 2. **Open Chrome Extensions:** Go to `chrome://extensions/`.
 3. **Enable Developer Mode** (toggle on top-right).
