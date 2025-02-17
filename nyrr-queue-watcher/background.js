@@ -63,3 +63,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === 'get_nyrr_cookies') {
+    // Process the request here...
+    chrome.cookies.getAll({
+        domain: ".nyrr.org"
+    }, (cookies) => {
+       sendResponse(cookies);
+    });
+    return true; // Indicate that the response will be sent asynchronously.
+  }
+  // Handle other message types...
+  return false; // Indicate no asynchronous response.
+});
+
