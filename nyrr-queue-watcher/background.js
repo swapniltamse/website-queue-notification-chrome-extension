@@ -44,17 +44,17 @@ function notifyUser(title, message) {
 }
 
 // Mock function for queue cookies
-// function mockQueueCookies() {
-//   const timestamp = new Date().toLocaleString();
-//   notifyUser("Queue Session Mocked", `Mock token: test123 | Time: ${timestamp}`);
-//   notifyUser("Queue Position Mocked", `Position: 9999 | Time: ${timestamp}`);
+function mockQueueCookies() {
+  const timestamp = new Date().toLocaleString();
+  notifyUser("Queue Session Mocked", `Mock token: test123 | Time: ${timestamp}`);
+  notifyUser("Queue Position Mocked", `Position: 9999 | Time: ${timestamp}`);
   
-//   // Log cookie simulation for debugging
-//   console.log("[Mock Test] queue-it-token: test123");
-//   console.log("[Mock Test] queue-position: 1299");
-// }
+  // Log cookie simulation for debugging
+  console.log("[Mock Test] queue-it-token: test123");
+  console.log("[Mock Test] queue-position: 1299");
+}
 
-// mockQueueCookies();
+mockQueueCookies();
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === "popup_check") {
