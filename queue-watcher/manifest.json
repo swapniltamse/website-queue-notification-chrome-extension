@@ -1,0 +1,29 @@
+{
+    "manifest_version": 3,
+    "name": "Queue Cookie Watcher",
+    "version": "1.0",
+    "description": "Monitors queue cookies and alerts you when the status changes.",
+    "permissions": [
+      "cookies",
+      "alarms",
+      "notifications",
+      "activeTab",
+      "scripting"
+    ],
+    "host_permissions": [
+      "*://*.nyrr.org/*"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html",
+      "default_title": "Queue Watcher"
+    },
+    "icons": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  }
+  
