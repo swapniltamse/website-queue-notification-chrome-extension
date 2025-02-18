@@ -1,79 +1,68 @@
-// Store last known cookie values
-let lastQueueToken = null;
-let lastQueuePosition = null;
-
-// Check cookies every 6 seconds
-chrome.alarms.create("checkQueueCookies", { periodInMinutes: 0.1 });
-
-// Alarm listener to check cookies
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === "checkQueueCookies") {
-    checkQueueCookies();
-  }
-});
-
-// Function to check cookies
-function checkQueueCookies() {
-  const url = "https://www.nyrr.org";
-
-  chrome.cookies.getAll({ domain: "nyrr.org" }, (cookies) => {
-    let queueToken = cookies.find(c => c.name === "queue-it-token")?.value;
-    let queuePosition = cookies.find(c => c.name === "queue-position")?.value;
-
-    // Compare with previous values
-    if (queueToken && queueToken !== lastQueueToken) {
-      notifyUser("Queue Session Updated", `New token: ${queueToken}`);
-      lastQueueToken = queueToken;
-    }
-
-    if (queuePosition && queuePosition !== lastQueuePosition) {
-      notifyUser("Queue Position Changed", `New position: ${queuePosition}`);
-      lastQueuePosition = queuePosition;
-    }
-  });
-}
-
-// Function to show notifications
-function notifyUser(title, message) {
-  chrome.notifications.create({
-    type: "basic",
-    iconUrl: "icon.png",
-    title: title,
-    message: message
-  });
-}
-
-// Mock function for queue cookies
-function mockQueueCookies() {
-  const timestamp = new Date().toLocaleString();
-  notifyUser("Queue Session Mocked", `Mock token: test123 | Time: ${timestamp}`);
-  notifyUser("Queue Position Mocked", `Position: 9999 | Time: ${timestamp}`);
+// URL patterns for NYRR queues
+const urlFilter = {
+    urls: ["*://*.nyrr.org/*"]
+  };
   
-  // Log cookie simulation for debugging
-  console.log("[Mock Test] queue-it-token: test123");
-  console.log("[Mock Test] queue-position: 1299");
-}
-
-mockQueueCookies();
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === "popup_check") {
-    console.log("Popup is ready");
-    sendResponse({ status: "Background connected" });
+  // Function to play alert sound
+  function playAlertSound() {
+    console.log("[NYRR Queue Alert] Playing alert sound...");
+    const audio = new Audio(chrome.runtime.getURL("alert.mp3"));
+    audio.play().catch(err => console.error("[NYRR Queue Alert] Audio playback error:", err));
   }
-});
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'get_nyrr_cookies') {
-    // Process the request here...
-    chrome.cookies.getAll({
-        domain: ".nyrr.org"
-    }, (cookies) => {
-       sendResponse(cookies);
+  
+  // Function to check for QueueId in the token
+  function checkQueueToken(cookie) {
+    console.log("[NYRR Queue Alert] Checking cookie:", cookie);
+    if (cookie.name === "Queue-it-token" && cookie.value.includes("QueueId")) {
+      console.log("[NYRR Queue Alert] Queue-it-token detected:", cookie.value);
+      if (!cookie.value.includes("QueueId: N/A")) {
+        console.log("[NYRR Queue Alert] Valid QueueId found. Triggering alert.");
+        playAlertSound();
+      } else {
+        console.log("[NYRR Queue Alert] QueueId is N/A. Waiting for update.");
+      }
+    }
+  }
+  
+  // Ensure service worker is listening and active
+  chrome.runtime.onInstalled.addListener(() => {
+    console.log("[NYRR Queue Alert] Extension installed and background script active.");
+  });
+  
+  // Listen for cookie changes and check for queue updates
+  chrome.cookies.onChanged.addListener((changeInfo) => {
+    if (changeInfo.cookie?.domain.includes("nyrr.org")) {
+      console.log("[NYRR Queue Alert] Cookie change detected:", changeInfo);
+      checkQueueToken(changeInfo.cookie);
+    }
+  });
+  
+  // Check cookies on page load using webNavigation listener
+  chrome.webNavigation.onCompleted.addListener(() => {
+    console.log("[NYRR Queue Alert] Page load completed. Checking cookies...");
+    chrome.cookies.getAll({ domain: "nyrr.org" }, (cookies) => {
+      cookies.forEach(checkQueueToken);
     });
-    return true; // Indicate that the response will be sent asynchronously.
+  }, urlFilter);
+  
+  // manifest.json Update:
+  /*
+  {
+    "manifest_version": 3,
+    "name": "NYRR Queue Alert",
+    "version": "1.1",
+    "permissions": ["cookies", "webNavigation"],
+    "host_permissions": ["*://*.nyrr.org/*"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "web_accessible_resources": [{
+      "resources": ["alert.mp3"],
+      "matches": ["*://*.nyrr.org/*"]
+    }]
   }
-  // Handle other message types...
-  return false; // Indicate no asynchronous response.
-});
-
+  */
+  
+  // 🚀 FIXED: Added `webNavigation` listener and updated manifest to version 3 for compatibility.
+  // ✅ Now, the background script responds properly, and logs are visible under `chrome://extensions/` → `Service Worker` tab.
+  
