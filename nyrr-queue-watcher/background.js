@@ -63,6 +63,5 @@ const urlFilter = {
   }
   */
   
-  // 🚀 FIXED: Added `webNavigation` listener and updated manifest to version 3 for compatibility.
-  // ✅ Now, the background script responds properly, and logs are visible under `chrome://extensions/` → `Service Worker` tab.
+ 
   
