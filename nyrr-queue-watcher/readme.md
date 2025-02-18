@@ -10,6 +10,7 @@ This Chrome extension monitors queue cookies (e.g., `queue-it-token`, `queue-pos
 The official chrome extension is submitted for review and publishing.
 ![alt text](image.png)
 
+Update: More audio related feature are being added, the extension might not funtion properly in the meantime
 
 # Installation
 1. **Clone the repository:**  
